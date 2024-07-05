@@ -47,8 +47,16 @@ Even though this service is meant to be used as an OTEL service, rather than a P
 
 ### Docker
 
+Make a copy of **compose.example.yaml** and rename it to **compose.yaml**. Also, provide the correct environment variables. Those variables are setting your azure service bus connection and to your open telemetry endpoint.
+
 ```docker compose up --build```
 
 ### Termina/CMD
+
+In order to run this service, an environment variable for your service bus needs to be set.
+
+Environment variables:
+
+* ServiceBusConnectionString
 
 ```dotnet run```
