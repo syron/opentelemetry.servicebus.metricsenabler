@@ -6,6 +6,8 @@ Using this service, only metrics of one service bus namespace are being exposed.
 
 > Even if the official otel collector supports azure monitor receivers, an Azure Monitor resource is still required. This does not require any Azure Monitor resource.
 
+> This project is just meant as an example of how simple it is to accomplish quite advanced tasks using open telemetry.
+
 ## Metrics
 
 ### Queues
