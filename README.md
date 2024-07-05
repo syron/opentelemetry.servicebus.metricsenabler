@@ -4,7 +4,7 @@ This service provides metrics to an OTEL endpoint which then can be monitored us
 
 Using this service, only metrics of one service bus namespace are being exposed. However, if you need to expose more metrics, you can set up multiple instances.
 
-    Even if the official otel collector supports azure monitor receivers, an Azure Monitor resource is still required. This does not require any Azure Monitor resource.
+> Even if the official otel collector supports azure monitor receivers, an Azure Monitor resource is still required. This does not require any Azure Monitor resource.
 
 ## Metrics
 
