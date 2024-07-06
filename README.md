@@ -1,6 +1,6 @@
 # Azure Service Bus Metrics Enabler
 
-[![Docker Image CI](https://github.com/syron/opentelemetry.servicebus.metricsenabler/actions/workflows/docker-image.yml/badge.svg)](https://github.com/syron/opentelemetry.servicebus.metricsenabler/actions/workflows/docker-image.yml)
+[![.NET](https://github.com/syron/opentelemetry.servicebus.metricsenabler/actions/workflows/dotnet.yml/badge.svg)](https://github.com/syron/opentelemetry.servicebus.metricsenabler/actions/workflows/dotnet.yml) [![Docker Image CI](https://github.com/syron/opentelemetry.servicebus.metricsenabler/actions/workflows/docker-image.yml/badge.svg)](https://github.com/syron/opentelemetry.servicebus.metricsenabler/actions/workflows/docker-image.yml)
 
 This service provides metrics to an OTEL (OpenTelemetry) endpoint which then can be monitored using e.g. prometheus, grafana, opensearch or other.
 
