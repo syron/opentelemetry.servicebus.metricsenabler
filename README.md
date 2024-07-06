@@ -58,18 +58,34 @@ Even though this service is meant to be used as an OTEL service, rather than a P
 
 ## How to run
 
+The following fields are mandatory to set in your configuration and environment. 
+
+Mandatory fields:
+
+* ServiceBusConnectionString (This is the connectionstring to your Service Bus Namespace)
+* OTEL_EXPORTER_OTLP_PROTOCOL (This defines whether to use http/protobuf or grpc)
+* OTEL_EXPORTER_OTLP_ENDPOINT (This sets the OTEL endpoint you have setup to log those metrics)
+
+Optional fields:
+
+* OTEL_EXPORTER_OTLP_HEADERS (Whether your OTEL endpoint requires a certain HTTP header. Let's say you are hiding the OTEL collector behind an API Management, then an OCPM or other API key is rquired)
+
 ### Docker
 
-Make a copy of **compose.example.yaml** and rename it to **compose.yaml**. Also, provide the correct environment variables. Those variables are setting your azure service bus connection and to your open telemetry endpoint.
+#### Before you start
+
+Make a copy of **compose.example.yaml** and rename it to **compose.yaml**. Also, provide the correct environment variables.
+
+#### How to run & build
 
 ```docker compose up --build```
 
 ### Terminal/CMD
 
-In order to run this service, an environment variable for your service bus needs to be set.
+#### Before you start
 
-Environment variables:
+In order to run this service, an environment variable for your service bus needs to be set, that environment variable is called **ServiceBusConnectionString**.
 
-* ServiceBusConnectionString
+#### How to run & build
 
 ```dotnet run```
