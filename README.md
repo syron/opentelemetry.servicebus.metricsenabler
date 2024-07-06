@@ -62,7 +62,7 @@ Make a copy of **compose.example.yaml** and rename it to **compose.yaml**. Also,
 
 ```docker compose up --build```
 
-### Termina/CMD
+### Terminal/CMD
 
 In order to run this service, an environment variable for your service bus needs to be set.
 
