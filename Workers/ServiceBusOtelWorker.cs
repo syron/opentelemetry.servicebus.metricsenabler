@@ -1,17 +1,16 @@
+using Quartz;
 using System.Diagnostics.Metrics;
 using Azure.Messaging.ServiceBus.Administration;
 
-namespace servicebusmetricsenabler.Workers;
-
-public class ServiceBusMetricWorker : BackgroundService
+public class ServiceBusOtelWorker : IJob
 {
     private readonly Meter _meter;
 
     private readonly ServiceBusMetricsService _metricsService;
-    private readonly ILogger<ServiceBusMetricWorker> _logger;
+    private readonly ILogger<ServiceBusOtelWorker> _logger;
     private readonly ServiceBusAdministrationClient _adminClient;
 
-    public ServiceBusMetricWorker(ILogger<ServiceBusMetricWorker> logger, IMeterFactory meterFactory, ServiceBusMetricsService serviceBusMetricsService) 
+    public ServiceBusOtelWorker(ILogger<ServiceBusOtelWorker> logger, IMeterFactory meterFactory, ServiceBusMetricsService serviceBusMetricsService)
     {
         _meter = meterFactory.Create(GLOBALS.SERVICEBUSMETERNAME);
         _metricsService = serviceBusMetricsService;
@@ -24,15 +23,17 @@ public class ServiceBusMetricWorker : BackgroundService
         _adminClient = new ServiceBusAdministrationClient(connectionString);
     }
 
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task Execute(IJobExecutionContext context)
     {
+        _logger.LogDebug("Started ServiceBusOtelWorker worker");
+
         var dict = new Dictionary<string, object>();
 
-        var queues = _adminClient.GetQueuesAsync(stoppingToken);
+        var queues = _adminClient.GetQueuesAsync(context.CancellationToken);
 
         await foreach (var queue in queues)
         {
-            var queueProperties = await _adminClient.GetQueueRuntimePropertiesAsync(queue.Name, stoppingToken);
+            var queueProperties = await _adminClient.GetQueueRuntimePropertiesAsync(queue.Name, context.CancellationToken);
             
             if (queueProperties is not null) {
                 var queueDetails = queueProperties.Value;
@@ -53,10 +54,10 @@ public class ServiceBusMetricWorker : BackgroundService
             }
         }
 
-        var topics = _adminClient.GetTopicsAsync();
+        var topics = _adminClient.GetTopicsAsync(context.CancellationToken);
         await foreach (var topic in topics) 
         {
-            var topicDetails = (await _adminClient.GetTopicRuntimePropertiesAsync(topic.Name, stoppingToken)).Value;
+            var topicDetails = (await _adminClient.GetTopicRuntimePropertiesAsync(topic.Name, context.CancellationToken)).Value;
 
             var totalmessagecount = _meter.CreateObservableGauge<long>($"topic.{topic.Name}.numberofsubscribers", () => topicDetails.SubscriptionCount, "count", "Number of active messages");
 
@@ -64,7 +65,5 @@ public class ServiceBusMetricWorker : BackgroundService
         }
 
         _metricsService.Set(dict);
-
-        await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
     }
-}
+}       
