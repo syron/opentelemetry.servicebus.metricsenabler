@@ -1,10 +1,11 @@
+using System.Net.Quic;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using servicebusmetricsenabler.Workers;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,11 +36,25 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ServiceBusMetricsService>();
 
-builder.Services.AddHostedService<ServiceBusMetricWorker>();
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("ServiceBusOtelWorker");
+    q.AddJob<ServiceBusOtelWorker>(opts => opts.WithIdentity(jobKey));
+    
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("ServiceBusOtelWorker-timely-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInSeconds(30).RepeatForever()) // todo: replace with config value
+    );
+});
+builder.Services.AddQuartzHostedService(q => { 
+    q.WaitForJobsToComplete = true;
+    q.StartDelay = TimeSpan.Zero;
+    });
 
 var app = builder.Build();
 
-app.MapPrometheusScrapingEndpoint("/customservicebusmetrics"); // this can be used if otel endpoint is not available.
+app.MapPrometheusScrapingEndpoint(); // this can be used if otel endpoint is not available.
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
